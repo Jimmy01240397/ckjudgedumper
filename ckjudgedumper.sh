@@ -16,8 +16,8 @@ cont=$(curl -H "Cookie: $1" https://ckj.csie.ncku.edu.tw/problems | jq -r '.prob
 
 for a in $(seq 0 1 $(($cont-1)))
 do
-    chapter=$(curl -H "Cookie: $1" https://ckj.csie.ncku.edu.tw/problems | jq -r ".problems[$a].chapter.index")
-    title=$(curl -H "Cookie: $1" https://ckj.csie.ncku.edu.tw/problems | jq -r ".problems[$a].title")
+    chapter=$(curl -H "Cookie: $1" https://ckj.csie.ncku.edu.tw/problems | jq -r ".problems[$a].chapter.index" | sed 's/\.//g')
+    title=$(curl -H "Cookie: $1" https://ckj.csie.ncku.edu.tw/problems | jq -r ".problems[$a].title" | sed 's/\.//g')
     id=$(curl -H "Cookie: $1" https://ckj.csie.ncku.edu.tw/problems | jq -r ".problems[$a].id")
     
     #Description
@@ -39,7 +39,7 @@ do
     echo '<p>Your code will be judge using this program:</p>' >> "$chapter/$title/description.html"
     echo "</div>" >> "$chapter/$title/description.html"
     echo "<pre>" >> "$chapter/$title/description.html"
-    curl -H "Cookie: $1" https://ckj.csie.ncku.edu.tw/problems/$id | jq -r '.loaderCode' 2>/dev/null >> "$chapter/$title/description.html"
+    curl -H "Cookie: $1" https://ckj.csie.ncku.edu.tw/problems/$id | jq -r '.loaderCode' 2>/dev/null | sed 's/</<\&zwj;/g' >> "$chapter/$title/description.html"
     echo "</pre>" >> "$chapter/$title/description.html"
     
     
@@ -52,11 +52,11 @@ do
         echo "<h3>Sample$(($b+1))</h3>" >> "$chapter/$title/samples.html"
         echo "<h4>Input</h4>" >> "$chapter/$title/samples.html"
         echo "<pre>" >> "$chapter/$title/samples.html"
-        curl -H "Cookie: $1" https://ckj.csie.ncku.edu.tw/problems/$id | jq -r ".samples[$b].inputData" 2>/dev/null >> "$chapter/$title/samples.html"
+        curl -H "Cookie: $1" https://ckj.csie.ncku.edu.tw/problems/$id | jq -r ".samples[$b].inputData" 2>/dev/null | sed 's/</<\&zwj;/g' >> "$chapter/$title/samples.html"
         echo "</pre>" >> "$chapter/$title/samples.html"
         echo "<h4>Output</h4>" >> "$chapter/$title/samples.html"
         echo "<pre>" >> "$chapter/$title/samples.html"
-        curl -H "Cookie: $1" https://ckj.csie.ncku.edu.tw/problems/$id | jq -r ".samples[$b].outputData" 2>/dev/null >> "$chapter/$title/samples.html"
+        curl -H "Cookie: $1" https://ckj.csie.ncku.edu.tw/problems/$id | jq -r ".samples[$b].outputData" 2>/dev/null | sed 's/</<\&zwj;/g' >> "$chapter/$title/samples.html"
         echo "</pre>" >> "$chapter/$title/samples.html"
         echo "</div>" >> "$chapter/$title/samples.html"
     done
