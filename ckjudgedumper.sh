@@ -1,5 +1,12 @@
 #!/bin/bash
 
+argnum=$#
+if [ $argnum -eq 0 ]
+then
+    echo "usage: $0 <ckjudge cookie>"
+    exit 0
+fi
+
 cookie=$1
 
 mkdir ckjudge
