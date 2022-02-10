@@ -45,16 +45,6 @@ do
     curl -H "Cookie: $1" https://ckj.csie.ncku.edu.tw/problems/$id 2>/dev/null | jq -r '.loaderCode' 2>/dev/null | sed 's/</<\&zwj;/g' >> "$chapter/$title/description.html"
     echo "</pre>" >> "$chapter/$title/description.html"
     
-    mkdir "$chapter/$title/images" 2>/dev/null
-    #allbase64imagemark=$(grep -oP '(data:image/png;base64,)[A-Za-z0-9+/=]*' "$chapter/$title/description.html")
-    allbase64image=$(grep -oP '(?<=data:image/png;base64,)[A-Za-z0-9+/=]*' "$chapter/$title/description.html")
-    #imagecont=$(echo $allbase64image | wc -l)
-    for image in $allbase64image
-    do
-        echo $image | base64 -d > "$chapter/$title/images/$(echo $image | sha1sum | sed 's/[^a-z0-9]//g').png"
-        echo "s/data:image\/png;base64,$(echo "$image" | sed 's/\//\\\//g')/\/$chapter\/$title\/images\/$(echo $image | sha1sum | sed 's/[^a-z0-9]//g')\.png/g" > /tmp/sedconf
-        sed -i -f /tmp/sedconf "$chapter/$title/description.html"
-    done
     
     #Samples
     samplecont=$(curl -H "Cookie: $1" https://ckj.csie.ncku.edu.tw/problems/$id 2>/dev/null | jq -r '.samples | length' 2>/dev/null)
@@ -75,7 +65,16 @@ do
 
 
     #Markdown
-    pandoc --from html --to markdown "$chapter/$title/description.html" -o "$chapter/$title/description.md"
+    pandoc --from html --to markdown "$chapter/$title/description.html" -o "$chapter/$title/Readme.md"
+    
+    mkdir "$chapter/$title/images" 2>/dev/null
+    allbase64image=$(grep -oP '(?<=data:image/png;base64,)[A-Za-z0-9+/=]*' "$chapter/$title/Readme.md")
+    for image in $allbase64image
+    do
+        echo $image | base64 -d > "$chapter/$title/images/$(echo $image | sha1sum | sed 's/[^a-z0-9]//g').png"
+        echo "s/data:image\/png;base64,$(echo "$image" | sed 's/\//\\\//g')/\/$(echo "$chapter" | jq -sRr @uri | sed 's/%0A//g')\/$(echo "$title" | jq -sRr @uri | sed 's/%0A//g')\/images\/$(echo $image | sha1sum | sed 's/[^a-z0-9]//g')\.png/g" > /tmp/sedconf
+        sed -i -f /tmp/sedconf "$chapter/$title/Readme.md"
+    done
 
     #ans
     if [ "$(curl -H "Cookie: $1" https://ckj.csie.ncku.edu.tw/user/submission/$id 2>/dev/null)" = "Not signing in" ]
@@ -119,12 +118,10 @@ function saveUnit(){
     for sdir in ${1%/*}/*/;
     do
         echo "    - [$(echo $sdir | sed 's/\/$//g' | sed 's/.*\///g')](/$(echo $sdir | sed 's/\/$//g' | jq -sRr @uri | sed 's/%0A//g'))" >> "Readme.md"
-        echo "      - [description](/$(echo $sdir | sed 's/\/$//g' | jq -sRr @uri | sed 's/%0A//g')/description.md)" >> "Readme.md"
-        echo "      - [ans](/$(echo $sdir | sed 's/\/$//g' | jq -sRr @uri | sed 's/%0A//g')/ans.c)" >> "Readme.md"
         cat "$sdir/description.html" >> "${1%/*}/${1%/*}.html"
     done
     cat "${1%/*}/${1%/*}.html" >> "pd1.html"
-    pandoc --from html --to markdown "${1%/*}/${1%/*}.html" -o "${1%/*}/${1%/*}.md"
+    pandoc --from html --to markdown "${1%/*}/${1%/*}.html" -o "${1%/*}/Readme.md"
 }
 
 echo "<h1>Program Design (I)</h1>" > "pd1.html"
