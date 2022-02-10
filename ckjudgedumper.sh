@@ -83,7 +83,7 @@ done
 
 function saveUnit(){
     IFS='/'
-    echo "process:$1"
+    echo "process: $1"
     read -a dnoarr <<< "$1"
     if test -f "$1/$1.html";
     then
