@@ -1,6 +1,6 @@
 # ckjudgedumper
 
-A efficient dumper that written in shell script download all problem and submitted code from NCKU CSIE program design I judge server - [CKJudge](https://ckj.csie.ncku.edu.tw/#/).
+A efficient dumper that written in shell script download all problems and submitted code from NCKU CSIE program design I judge server - [CKJudge](https://ckj.csie.ncku.edu.tw/#/).
 
 ## requirement
 
@@ -21,7 +21,7 @@ bash ckjudgedumper.sh <ckjudge cookie>
 
 here is how to get cookies
 
-+ first open your browser and login into CKJudge
++ first open your browser and login into [CKJudge](https://ckj.csie.ncku.edu.tw/#/)
 
 ![](https://i.imgur.com/KzJb3M6.png)
 
