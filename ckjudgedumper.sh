@@ -76,3 +76,42 @@ do
         done
     fi
 done
+
+
+
+# merge and convert to markdown 
+function saveUnit(){
+    IFS='/'
+    echo "process: ${1%/*}"
+    if test -f "${1%/*}/${1%/*}.html";
+    then
+        rm "${1%/*}/${1%/*}.html"
+    fi
+    echo "<h1>${1%/*}</h1>" >> "${1%/*}/${1%/*}.html"
+    for sdir in ${1%/*}/*/;
+    do   
+        read -a dnarr <<< "$sdir"
+        echo "<h2>${dnarr[1]}</h2>" >> "${1%/*}/${1%/*}.html"
+        cat "$sdir/description.html" >> "${1%/*}/${1%/*}.html"
+        cat "$sdir/samples.html" >> "${1%/*}/${1%/*}.html"
+    done
+    cat "${1%/*}/${1%/*}.html" >> "pd1.html"
+    pandoc --from html --to markdown "${1%/*}/${1%/*}.html" -o "${1%/*}/${1%/*}.md"
+}
+
+echo "<h1>Program Design (I)</h1>" >> "pd1.html"
+
+for dir in L*/; 
+do
+    saveUnit $dir
+done
+
+for dir in 2*/; 
+do
+    saveUnit $dir
+done
+
+# pd1.md 
+pandoc --from html --to markdown "pd1.html" -o "pd1.md"
+
+echo "done."
