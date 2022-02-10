@@ -115,16 +115,23 @@ done
 function saveUnit(){
     echo "process: ${1%/*}"
     echo "<h1>${1%/*}</h1>" > "${1%/*}/${1%/*}.html"
+    echo "<h1>${1%/*}</h1>" | pandoc --from html --to markdown > "${1%/*}/Readme.md"
+    echo "" >> "${1%/*}/Readme.md"
     for sdir in ${1%/*}/*/;
     do
         echo "    - [$(echo $sdir | sed 's/\/$//g' | sed 's/.*\///g')](/$(echo $sdir | sed 's/\/$//g' | jq -sRr @uri | sed 's/%0A//g'))" >> "Readme.md"
         cat "$sdir/description.html" >> "${1%/*}/${1%/*}.html"
+        cat "$sdir/Readme.md" >> "${1%/*}/Readme.md"
+        echo "" >> "${1%/*}/Readme.md"
     done
     cat "${1%/*}/${1%/*}.html" >> "pd1.html"
-    pandoc --from html --to markdown "${1%/*}/${1%/*}.html" -o "${1%/*}/Readme.md"
+    cat "${1%/*}/Readme.md" >> "pd1.md"
+    echo "" >> "pd1.md"
 }
 
 echo "<h1>Program Design (I)</h1>" > "pd1.html"
+echo "<h1>Program Design (I)</h1>" | pandoc --from html --to markdown > "pd1.md"
+echo "" >> "pd1.md"
 
 echo "- [Program Design (I)](/pd1.md)" > "Readme.md"
 
@@ -133,8 +140,5 @@ do
     echo "  - [$(echo $dir | sed 's/\/$//g' | sed 's/.*\///g')](/$(echo $dir | sed 's/\/$//g' | jq -sRr @uri | sed 's/%0A//g'))" >> "Readme.md"
     saveUnit $dir
 done
-
-# pd1.md 
-pandoc --from html --to markdown "pd1.html" -o "pd1.md"
 
 echo "done."
