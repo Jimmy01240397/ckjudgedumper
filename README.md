@@ -40,5 +40,5 @@ here is how to get cookies
 + Last but not least, open a Terminal and type (or copy / paste) the following command (with your own cookies fill in) in , then press Enter.
 
 ```bash
-./ckjudgedumper.sh connect.sid=<your cookies which copied to clipboard previously>
+bash ckjudgedumper.sh connect.sid=<your cookies which copied to clipboard previously>
 ```
